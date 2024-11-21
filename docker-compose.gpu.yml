@@ -1,0 +1,24 @@
+services:
+  app:
+    container_name: docling-easyocr
+    restart: always
+    build:
+      context: .
+      args:
+        CPU_ONLY: "false"
+    image: converter-gpu-image
+    command: poetry run uvicorn --port 8080 --host 0.0.0.0 main:app
+    environment:
+      - ENV=production
+      - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

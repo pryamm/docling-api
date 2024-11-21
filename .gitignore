@@ -1,0 +1,21 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# Additional IDE files
+*.iml
+*.iws
+/out/
+/target/
+/build/
+.idea/libraries/
+.idea/modules.xml
+.idea/misc.xml
+.env*
+.DS_Store
+__pycache__
