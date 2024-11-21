@@ -14,7 +14,7 @@ from typing import Optional
 
 class Result(BaseModel):
     text: Optional[str] = Field(None, description="The markdown content of the document")
-    json: Optional[dict] = Field(None, description="The JSON content of the document")
+    data: Optional[dict] = Field(None, description="The JSON content of the document")
     error: Optional[str] = Field(None, description="The error that occurred during the conversion")
 
 class ConverterService:
@@ -51,7 +51,7 @@ class ConverterService:
 
             print(conv_result.document.export_to_markdown())
 
-            return Result(json=conv_result.document.export_to_dict())
+            return Result(data=conv_result.document.export_to_dict())
 
         except Exception as e:
             print(f"Conversion failed: {e}")

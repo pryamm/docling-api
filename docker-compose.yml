@@ -19,6 +19,26 @@ services:
       - .:/app
       - model_cache:/tmp
 
+  ocr-cpu-1:
+    container_name: docling-easyocr-cpu
+    restart: always
+    build:
+      context: .
+      args:
+        CPU_ONLY: "true"
+    image: converter-cpu-image
+    command: uvicorn --port 8080 --host 0.0.0.0 main:app
+    environment:
+      - ENV=production
+      - MALLOC_ARENA_MAX=2
+      - OMP_NUM_THREADS=2
+      - PYTHONMALLOC=malloc
+    ports:
+      - "8081:8080"
+    volumes:
+      - .:/app
+      - model_cache:/tmp
+
   ocr-gpu:
     container_name: docling-easyocr-gpu
     restart: always
@@ -42,6 +62,43 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+  ocr-gpu-1:
+    container_name: docling-easyocr-gpu
+    restart: always
+    build:
+      context: .
+      args:
+        CPU_ONLY: "false"
+    image: converter-gpu-image
+    command: uvicorn main:app --port 8080 --host 0.0.0.0
+    environment:
+      - ENV=production
+      - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - "8081:8080"
+    volumes:
+      - .:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-document-converter
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: always
 
 volumes:
   model_cache:
