@@ -3,4 +3,4 @@ uvicorn==0.32.0
 gunicorn==23.0.0
 pydantic==1.10.2
 docling==2.3.1
-easyocr==1.6.2
+easyocr==1.7.2
