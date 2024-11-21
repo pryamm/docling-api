@@ -14,7 +14,7 @@ services:
       - OMP_NUM_THREADS=2
       - PYTHONMALLOC=malloc
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - .:/app
       - model_cache:/tmp
@@ -32,7 +32,7 @@ services:
       - ENV=production
       - NVIDIA_VISIBLE_DEVICES=all
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - .:/app
     deploy:
