@@ -1,0 +1,47 @@
+services:
+  ocr-cpu:
+    container_name: docling-easyocr-cpu
+    restart: always
+    build:
+      context: .
+      args:
+        CPU_ONLY: "true"
+    image: converter-cpu-image
+    command: poetry run uvicorn --port 8080 --host 0.0.0.0 main:app
+    environment:
+      - ENV=production
+      - MALLOC_ARENA_MAX=2
+      - OMP_NUM_THREADS=2
+      - PYTHONMALLOC=malloc
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - model_cache:/tmp
+
+  ocr-gpu:
+    container_name: docling-easyocr-gpu
+    restart: always
+    build:
+      context: .
+      args:
+        CPU_ONLY: "false"
+    image: converter-gpu-image
+    command: poetry run uvicorn --port 8080 --host 0.0.0.0 main:app
+    environment:
+      - ENV=production
+      - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  model_cache:
