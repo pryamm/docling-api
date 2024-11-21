@@ -11,6 +11,7 @@ from docling.document_converter import PdfFormatOption, DocumentConverter
 
 from pydantic import BaseModel, Field
 from typing import Optional
+import torch
 
 class Result(BaseModel):
     text: Optional[str] = Field(None, description="The markdown content of the document")
@@ -20,6 +21,14 @@ class Result(BaseModel):
 class ConverterService:
     def __init__(self, format_options=None):
         self.format_options = format_options
+        
+        # Check for MPS (Metal Performance Shaders) availability
+        self.device = (
+            torch.device("mps")
+            if hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+            else torch.device("cpu")
+        )
+        print(f"Using device: {self.device}")
 
     def convert(
         self,
@@ -30,6 +39,12 @@ class ConverterService:
         pipeline_options.do_ocr = True
         pipeline_options.do_table_structure = True
         pipeline_options.table_structure_options.do_cell_matching = True
+        
+        # Add MPS configuration
+        pipeline_options.ocr_options = {
+            "device": self.device,
+            "batch_size": 4,  # Adjust based on your memory
+        }
         
         doc_converter = DocumentConverter(
             format_options={
@@ -86,6 +101,14 @@ async def convert_single_document(
 
     return converter_service.convert(document.filename, BytesIO(file_bytes))
 
+@router.get("/system-info")
+async def get_system_info():
+    return {
+        "mps_available": hasattr(torch.backends, "mps") and torch.backends.mps.is_available(),
+        "current_device": str(converter_service.device),
+        "pytorch_version": torch.__version__,
+        "is_built_for_mac": torch.backends.mps.is_built(),
+    }
 
 # Include the router in the app
 app.include_router(router, prefix="", tags=["document-converter"])
