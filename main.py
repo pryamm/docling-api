@@ -26,8 +26,6 @@ class ConverterService:
         filename: str,
         file: BytesIO,
     ) -> Result:
-        print(f"DocumentStream: {DocumentStream(name=filename, stream=file)}")
-
         pipeline_options = PdfPipelineOptions()
         pipeline_options.do_ocr = True
         pipeline_options.do_table_structure = True
@@ -44,12 +42,10 @@ class ConverterService:
             conv_result = doc_converter.convert(DocumentStream(name=filename, stream=file))
             end_time = time.time() - start_time
 
-            print(f"Document converted in {end_time:.2f} seconds.")
+            print(f"Document {filename} converted in {end_time:.2f} seconds.")
 
             if conv_result.errors:
                 return Result(error=conv_result.errors[0].error_message)
-
-            print(conv_result.document.export_to_markdown())
 
             return Result(data=conv_result.document.export_to_dict())
 
