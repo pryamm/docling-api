@@ -1,5 +1,5 @@
 # Use a base image with Python 3.12
-FROM python:3.13-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 ARG CPU_ONLY=false
 WORKDIR /app
