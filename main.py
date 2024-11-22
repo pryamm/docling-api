@@ -58,7 +58,6 @@ class ConverterService:
                 InputFormat.PDF: PdfFormatOption(
                     pipeline_options=pipeline_options,
                     force_ocr=True,
-                    images_scale=0.5,  # Reduce image size for faster processing
                     max_pages=None,
                     page_numbers=None,
                     batch_size=3,  # Process 3 pages at once
