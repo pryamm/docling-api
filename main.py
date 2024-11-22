@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import is_file_format_supported
 
 import time
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import InputFormat, DocumentStream
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import PdfFormatOption, DocumentConverter
@@ -42,7 +43,7 @@ class ConverterService:
             
         settings.perf.doc_batch_size = 1 # default 2
         settings.perf.doc_batch_concurrency = 4 # default 2
-        settings.perf.page_batch_size = 1 # default 4
+        settings.perf.page_batch_size = 8 # default 4
         settings.perf.page_batch_concurrency = 4 # default 2
 
         pipeline_options = PdfPipelineOptions()
@@ -61,6 +62,7 @@ class ConverterService:
             format_options={
                 InputFormat.PDF: PdfFormatOption(
                     pipeline_options=pipeline_options,
+                    backend=PyPdfiumDocumentBackend
                 )
             }
         )
