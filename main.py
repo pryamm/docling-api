@@ -52,14 +52,18 @@ class ConverterService:
         pipeline_options.do_table_structure = False  # Disable if tables aren't needed
         pipeline_options.table_structure_options.do_cell_matching = False
         
+        # Add sequence/batch processing options
         doc_converter = DocumentConverter(
             format_options={
                 InputFormat.PDF: PdfFormatOption(
                     pipeline_options=pipeline_options,
                     force_ocr=True,
                     images_scale=0.5,  # Reduce image size for faster processing
-                    max_pages=None,  # Process all pages, set a number to limit
-                    page_numbers=None  # Process all pages, specify list for selective processing
+                    max_pages=None,
+                    page_numbers=None,
+                    batch_size=3,  # Process 3 pages at once
+                    num_workers=2,  # Use 2 worker processes
+                    use_threads=True  # Enable multi-threading
                 )
             }
         )
