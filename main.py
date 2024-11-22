@@ -49,8 +49,8 @@ class ConverterService:
         )
         
         # Reduce processing overhead
-        pipeline_options.do_table_structure = False  # Disable if tables aren't needed
-        pipeline_options.table_structure_options.do_cell_matching = False
+        pipeline_options.do_table_structure = True
+        pipeline_options.table_structure_options.do_cell_matching = True
         
         # Add sequence/batch processing options
         doc_converter = DocumentConverter(
