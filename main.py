@@ -27,7 +27,7 @@ class ConverterService:
         self.device = (
             torch.device("mps")
             if hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
-            else torch.device("cpu")
+            else torch.device("cuda")
         )
         print(f"Using device: {self.device}")
 
