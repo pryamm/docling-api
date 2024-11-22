@@ -8,6 +8,7 @@ import time
 from docling.datamodel.base_models import InputFormat, DocumentStream
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import PdfFormatOption, DocumentConverter
+from docling.models.easyocr_model import EasyOcrOptions
 
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -22,7 +23,7 @@ class ConverterService:
     def __init__(self, format_options=None):
         self.format_options = format_options
         
-        # Check for MPS (Metal Performance Shaders) availability
+        # Keep using MPS if available
         self.device = (
             torch.device("mps")
             if hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
@@ -35,38 +36,61 @@ class ConverterService:
         filename: str,
         file: BytesIO,
     ) -> Result:
+        # Clear any cached memory
+        if hasattr(torch.mps, 'empty_cache'):
+            torch.mps.empty_cache()
+            
         pipeline_options = PdfPipelineOptions()
-        pipeline_options.do_ocr = True
-        pipeline_options.do_table_structure = True
-        pipeline_options.table_structure_options.do_cell_matching = True
         
-        # Add MPS configuration
-        pipeline_options.ocr_options = {
-            "device": self.device,
-            "batch_size": 4,  # Adjust based on your memory
-        }
+        # Speed optimizations for OCR
+        pipeline_options.do_ocr = True
+        pipeline_options.ocr_options = EasyOcrOptions(
+            lang=["en", "id"],  # Keep only necessary languages
+        )
+        
+        # Reduce processing overhead
+        pipeline_options.do_table_structure = False  # Disable if tables aren't needed
+        pipeline_options.table_structure_options.do_cell_matching = False
         
         doc_converter = DocumentConverter(
             format_options={
-                InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+                InputFormat.PDF: PdfFormatOption(
+                    pipeline_options=pipeline_options,
+                    force_ocr=True,
+                    images_scale=0.5,  # Reduce image size for faster processing
+                    max_pages=None,  # Process all pages, set a number to limit
+                    page_numbers=None  # Process all pages, specify list for selective processing
+                )
             }
         )
 
         start_time = time.time()
         try:
-            conv_result = doc_converter.convert(DocumentStream(name=filename, stream=file))
+            doc_stream = DocumentStream(
+                name=filename, 
+                stream=file,
+                input_format=InputFormat.PDF
+            )
+            
+            print(f"Starting conversion with OCR options: {pipeline_options.ocr_options}")
+            conv_result = doc_converter.convert(doc_stream)
             end_time = time.time() - start_time
 
             print(f"Document {filename} converted in {end_time:.2f} seconds.")
 
             if conv_result.errors:
-                return Result(error=conv_result.errors[0].error_message)
+                error_msg = conv_result.errors[0].error_message
+                print(f"Conversion error: {error_msg}")
+                return Result(error=error_msg)
 
             return Result(data=conv_result.document.export_to_dict())
 
         except Exception as e:
-            print(f"Conversion failed: {e}")
-            return Result(text="failed")
+            print(f"Conversion failed with error: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            print(f"Stack trace: {traceback.format_exc()}")
+            return Result(error=str(e))
 
 # Create the FastAPI app
 app = FastAPI()
