@@ -8,7 +8,7 @@ import time
 from docling.datamodel.base_models import InputFormat, DocumentStream
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import PdfFormatOption, DocumentConverter
-from docling.models.easyocr_model import EasyOcrOptions
+from docling.datamodel.settings import settings 
 
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -40,29 +40,27 @@ class ConverterService:
         if hasattr(torch.mps, 'empty_cache'):
             torch.mps.empty_cache()
             
+        settings.perf.doc_batch_size = 1 # default 2
+        settings.perf.doc_batch_concurrency = 4 # default 2
+        settings.perf.page_batch_size = 1 # default 4
+        settings.perf.page_batch_concurrency = 4 # default 2
+
         pipeline_options = PdfPipelineOptions()
-        
-        # Speed optimizations for OCR
         pipeline_options.do_ocr = True
-        pipeline_options.ocr_options = EasyOcrOptions(
-            lang=["en", "id"],  # Keep only necessary languages
-        )
-        
-        # Reduce processing overhead
         pipeline_options.do_table_structure = True
         pipeline_options.table_structure_options.do_cell_matching = True
-        
+        pipeline_options.images_scale = 1.5 # default 1.0
+        pipeline_options.ocr_options.use_gpu = True
+        pipeline_options.ocr_options.lang = ["en", "id"] # https://www.jaided.ai/easyocr/
+        pipeline_options.generate_page_images = False
+        pipeline_options.generate_table_images = False
+        pipeline_options.generate_picture_images = False
+
         # Add sequence/batch processing options
         doc_converter = DocumentConverter(
             format_options={
                 InputFormat.PDF: PdfFormatOption(
                     pipeline_options=pipeline_options,
-                    force_ocr=True,
-                    max_pages=None,
-                    page_numbers=None,
-                    batch_size=3,  # Process 3 pages at once
-                    num_workers=2,  # Use 2 worker processes
-                    use_threads=True  # Enable multi-threading
                 )
             }
         )
