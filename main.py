@@ -30,8 +30,8 @@ class ConverterService:
     ) -> Result:
             
         settings.perf.doc_batch_size = 1 # default 2
-        settings.perf.doc_batch_concurrency = 4 # default 2
-        settings.perf.page_batch_size = 8 # default 4
+        settings.perf.doc_batch_concurrency = 1 # default 2
+        settings.perf.page_batch_size = 1 # default 4
         settings.perf.page_batch_concurrency = 4 # default 2
 
         
@@ -39,7 +39,7 @@ class ConverterService:
         pipeline_options.do_ocr = True
         pipeline_options.do_table_structure = True
         pipeline_options.table_structure_options.do_cell_matching = True
-        pipeline_options.images_scale = 1.5 # default 1.0
+        pipeline_options.images_scale = 1.0 # default 1.0
         pipeline_options.ocr_options.use_gpu = True
         pipeline_options.ocr_options.lang = ["en", "id"] # https://www.jaided.ai/easyocr/
         pipeline_options.generate_page_images = False
