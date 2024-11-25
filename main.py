@@ -13,7 +13,6 @@ from docling.datamodel.settings import settings
 
 from pydantic import BaseModel, Field
 from typing import Optional
-import torch
 
 class Result(BaseModel):
     text: Optional[str] = Field(None, description="The markdown content of the document")
