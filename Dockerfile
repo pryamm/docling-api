@@ -18,13 +18,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install PyTorch based on the GPU
 RUN pip install --no-deps torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-RUN python -c "import torch; print(torch.cuda.is_available())"
+RUN python3 -c "import torch; print(torch.cuda.is_available())"
 
-RUN python -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; \
+RUN python3 -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; \
     artifacts_path = StandardPdfPipeline.download_models_hf(force=True);'
 
 # Pre-download EasyOCR models
-RUN python -c 'import easyocr; \
+RUN python3 -c 'import easyocr; \
     reader = easyocr.Reader(["en", "id"], gpu=not "$CPU_ONLY".lower() == "true"); \
     print("EasyOCR models downloaded successfully")'
 
