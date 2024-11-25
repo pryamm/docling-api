@@ -31,7 +31,7 @@ class ConverterService:
             
         settings.perf.doc_batch_size = 1 # default 2
         settings.perf.doc_batch_concurrency = 1 # default 2
-        settings.perf.page_batch_size = 1 # default 4
+        settings.perf.page_batch_size = 4 # default 4
         settings.perf.page_batch_concurrency = 4 # default 2
 
         
