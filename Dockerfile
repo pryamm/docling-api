@@ -1,5 +1,5 @@
 # Use a CUDA-enabled base image
-FROM nvidia/cuda:12.2.2-base-ubuntu22.04
+FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install PyTorch based on the GPU
-RUN pip install --no-deps torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+RUN pip install --no-deps torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
 RUN python3 -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; \
     artifacts_path = StandardPdfPipeline.download_models_hf(force=True);'
