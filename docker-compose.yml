@@ -4,6 +4,7 @@ services:
     restart: always
     build:
       context: .
+      dockerfile: Dockerfile
     image: ocr
     command: uvicorn main:app --port 8080 --host 0.0.0.0
     environment:
