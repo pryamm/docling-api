@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y \ libgl1 libglib2.0-0 curl wget git procps python3 python3-pip \
+    && apt-get install -y \ curl wget git procps python3 python3-pip \
     && apt-get clean
 
 # Copy the requirements file to the container
