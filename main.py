@@ -7,7 +7,7 @@ from utils import is_file_format_supported
 import time
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import InputFormat, DocumentStream
-from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.pipeline_options import PdfPipelineOptions, EasyOcrOptions
 from docling.document_converter import PdfFormatOption, DocumentConverter
 from docling.datamodel.settings import settings 
 
@@ -45,6 +45,7 @@ class ConverterService:
         pipeline_options.generate_page_images = False
         pipeline_options.generate_table_images = False
         pipeline_options.generate_picture_images = False
+        pipeline_options.ocr_options = EasyOcrOptions(force_full_page_ocr=True)
 
         # Add sequence/batch processing options
         doc_converter = DocumentConverter(
