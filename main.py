@@ -29,10 +29,10 @@ class ConverterService:
         file: BytesIO,
     ) -> Result:
             
-        settings.perf.doc_batch_size = 1 # default 2
-        settings.perf.doc_batch_concurrency = 1 # default 2
-        settings.perf.page_batch_size = 4 # default 4
-        settings.perf.page_batch_concurrency = 4 # default 2
+        settings.perf.doc_batch_size = 2 # default 2
+        settings.perf.doc_batch_concurrency = 2 # default 2
+        settings.perf.page_batch_size = 8 # default 4
+        settings.perf.page_batch_concurrency = 8 # default 2
 
         
         pipeline_options = PdfPipelineOptions()
@@ -40,12 +40,15 @@ class ConverterService:
         pipeline_options.do_table_structure = True
         pipeline_options.table_structure_options.do_cell_matching = True
         pipeline_options.images_scale = 1.0 # default 1.0
-        pipeline_options.ocr_options.use_gpu = True
-        pipeline_options.ocr_options.lang = ["en", "id"] # https://www.jaided.ai/easyocr/
         pipeline_options.generate_page_images = False
         pipeline_options.generate_table_images = False
         pipeline_options.generate_picture_images = False
-        pipeline_options.ocr_options = EasyOcrOptions(force_full_page_ocr=True)
+        pipeline_options.ocr_options = EasyOcrOptions(
+            download_enabled=True,
+            force_full_page_ocr=True, 
+            lang=['en', 'id'], # https://www.jaided.ai/easyocr/, 
+            use_gpu=True    
+        )
 
         # Add sequence/batch processing options
         doc_converter = DocumentConverter(
