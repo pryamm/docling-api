@@ -33,7 +33,7 @@ RUN python -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPip
 
 # Pre-download EasyOCR models
 RUN python -c 'import easyocr; \
-    reader = easyocr.Reader(["en", "id"], gpu=True); \
+    reader = easyocr.Reader(["en", "id"], gpu=not "$CPU_ONLY".lower() == "true"); \
     print("EasyOCR models downloaded successfully")'
 
 # Copy the application files
