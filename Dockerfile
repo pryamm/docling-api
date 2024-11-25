@@ -25,7 +25,7 @@ RUN python3 -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPi
 
 # Pre-download EasyOCR models
 RUN python3 -c 'import easyocr; \
-    reader = easyocr.Reader(["en", "id"], gpu=not "$CPU_ONLY".lower() == "true"); \
+    reader = easyocr.Reader(["en", "id"], gpu=True); \
     print("EasyOCR models downloaded successfully")'
 
 # Copy the application files
